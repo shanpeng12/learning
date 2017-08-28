@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- 1、配置数据源-数据库连接技术 -->
+	<properties resource="jdbc.properties"></properties>
+	<!-- 配置logo4j日志记录 -->
+	<settings>
+		<setting name="logImpl" value="LOG4J" />
+		<!--设置自动映射级别  none为不自动映射 -->
+		<setting name="autoMappingBehavior" value="FULL"/>
+	</settings>
+	<!-- 别名 -->
+	<typeAliases>
+		<!--<typeAlias type="cn.pojo.User" alias="user"/> -->
+		<!-- 批量别名:指定包名称俩给地该包下的po类声明别名，默认的别名就是类名（首字母大小写都可的） -->
+		<package name="cn.pojo" />
+	</typeAliases>
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="${driver}" />
+				<property name="url" value="${url}" />
+				<property name="username" value="${user}" />
+				<property name="password" value="${password}" />
+			</dataSource>
+		</environment>
+	</environments>
+	<mappers>
+		<mapper resource="cn/dao/user/UserMapper.xml" />
+		<mapper resource="cn/dao/provider/ProviderMapper.xml" />
+		<mapper resource="cn/dao/bill/BillMapper.xml"/>
+	</mappers>
+</configuration>

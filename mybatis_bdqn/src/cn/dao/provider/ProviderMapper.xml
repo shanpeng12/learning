@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="cn.dao.provider.ProviderMapper">
+	<!-- 1.获得有多少条用户记录 -->
+	<select id="count" resultType="int">
+		select count(*) as count from smbms_provider
+	</select>
+	<!-- 获得所有用户记录 -->
+	<select id="getAll" resultType="provider">
+		select * from smbms_provider
+	</select>
+	<!-- 增加供应商 -->
+	<insert id="addProvider" parameterType="provider">
+		INSERT INTO
+		smbms_provider(proCode,proName,proDesc,proContact,proPhone,proAddress,proFax,createdBy,creationDate)
+		VALUES(#{proCode},#{proName},#{proDesc},#{proContact},#{proPhone},#{proAddress},#{proFax},#{createdBy},#{creationDate})
+	</insert>
+	<!--  -->
+	<update id="updateByParams">
+		update smbms_provider set proName=#{pname},proCode=#{pcode} where id=#{id}
+	</update>
+</mapper>

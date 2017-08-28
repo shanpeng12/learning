@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dao.user.UserMapper">
+	<!-- 1.获得有多少条用户记录 -->
+	<select id="count" resultType="int">
+		select count(*) as count from
+		smbms_user
+	</select>
+	<!-- 获得所有用户记录 -->
+	<select id="getAll" resultType="user">
+		select * from smbms_user
+	</select>
+	<!-- 根据用户名模糊查询 -->
+	<select id="getByName" parameterType="string" resultType="user">
+		select
+		* from smbms_user where userName like CONCAT ('%',#{username},"%")
+	</select>
+	<!--//4、根据用户名和角色进行模糊查询 -->
+	<select id="getUserList" parameterType="user" resultType="user">
+		select
+		* from smbms_user where userName like CONCAT ('%',#{userName},"%")
+		and
+		userRole=#{userRole}
+	</select>
+	<!--5、根据用户名和角色进行模糊查询yimap为新参 -->
+	<select id="getUserByMap" parameterType="Map" resultType="user">
+		select
+		* from smbms_user where userName like CONCAT ('%',#{name},"%") and
+		userRole=#{role}
+	</select>
+	<!--//6、根据用户名和角色进行模糊查询yimap为新参 -->
+	<select id="getUsers" parameterType="Map" resultType="user">
+		select
+		u.*,r.roleName as userRoleName from smbms_user u, smbms_role r
+		where u.userRole=r.id
+		<if test="name!=null and name!=''">
+			and u.userName like CONCAT ('%',#{name},"%")
+		</if>
+		<if test="role!=null and role!=''">
+			and u.userRole=#{role}
+		</if>
+	</select>
+	<!-- resultMap使用场景：当数据库中的字段名称和实体的属性名称不一致的时候，运用此方法的 -->
+	<resultMap type="User" id="UserMap"><!-- 返回的结果节和实体类的对应关系 -->
+		<!-- <result property="id" column="id" /> <result property="userCode" column="userCode" 
+			/> <result property="userName" column="userName" /> <result property="userPassword" 
+			column="userPassword" /> <result property="gender" column="gender" /> <result 
+			property="birthday" column="birthday" /> <result property="phone" column="phone" 
+			/> <result property="address" column="address" /> <result property="userRole" 
+			column="userRole" /> <result property="createdBy" column="createdBy" /> <result 
+			property="creationDate" column="creationDate" /> <result property="modifyBy" 
+			column="modifyBy" /> <result property="modifydate" column="modifydate" /> -->
+		<result property="userRoleName" column="userRoleName" /><!-- 数据库字段roleName：实体类的属性 -->
+	</resultMap>
+	<!-- 7 根据用户名和角色进行模糊查询以map为形参，结果集类型是UserMap -->
+	<select id="getUserUseResultMap" parameterType="Map" resultMap="UserMap">
+		select u.*,r.roleName as userRoleName from smbms_user u, smbms_role r
+		where u.userName like CONCAT ('%',#{name},"%")
+		and u.userRole=#{role}
+		and u.userRole=r.id
+	</select>
+	<!-- //8、增加用户 -->
+	<insert id="add" parameterType="user">
+		insert into
+		smbms_user(userCode,userName,userPassword)
+		VALUES(#{userCode},#{userName},#{userPassword})
+	</insert>
+	<!-- //9修改用户信息 -->
+	<update id="modify" parameterType="user">
+		update smbms_user set
+		userCode=#{userCode},userName=#{userName},userPassword=#{userPassword}
+		where id=#{id}
+	</update>
+	<!-- //10、删除用户 -->
+	<delete id="delect" parameterType="user">
+		DELETE from smbms_user where id=#{id}
+	</delete>
+	<!--11.传入多个参数修改  -->
+	<update id="updateByparams">
+	update smbms_user set userPassword=#{pass} where id=#{id}
+	</update>
+	<!-- //12、根据用户角色查询  这是没有自动映射-->
+	<resultMap type="user" id="byRole">
+		<association property="role" javaType="Role" resultMap="RoleResult" />
+	</resultMap>
+	<resultMap type="role" id="RoleResult">
+		<id property="id" column="r_id"/>
+		<!--  <result property="roleCode" column="roleCode"/>
+		<result property="roleName" column="roleName"/>-->
+	</resultMap>
+	<select id="getUserByRole" parameterType="int" resultMap="byRole">
+			select u.*,r.id as r_id,r.roleCode as roleCode,r.roleName as roleName 
+			from smbms_user u, smbms_role r
+			where u.userRole=#{role}
+			and u.userRole=r.id
+	</select>
+	<!-- 13、根据用户id获得用户的信息和地址列表 -->
+		<select id="getUserById" parameterType="int" resultMap="UserById">
+		select  u.* ,a.id a_id ,a.contact,a.addressDesc,a.postCode,a.tel
+			from  smbms_user u ,smbms_address a
+				where u.id=#{id} and u.id= a.userId
+	</select>
+	<resultMap type="User" id="UserById">
+		<id property="id" column="id"/>
+		<result property="userCode" column="userCode"/>
+		<result property="userName" column="userName"/>
+		<collection property="addressList" ofType="Address" resultMap="userList"/>
+	</resultMap>
+	<resultMap type="Address" id="userList">
+		<id property="id" column="a_id"/>
+		<result property="contact" column="contact"/>
+		<result property="addressDesc" column="addressDesc"/>
+		<result property="postCode" column="postCode"/>
+		<result property="tel" column="tel"/>
+	</resultMap>
+
+</mapper>

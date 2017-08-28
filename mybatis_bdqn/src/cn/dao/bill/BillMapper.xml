@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.dao.bill.BillMapper">
+	<!-- 根据商品的名称和供应商和是否付过款查询 -->
+	<select id="getByBills" parameterType="map" resultMap="getbill">
+		SELECT b.id,b.productName,p.proName,b.totalPrice,b.isPayment,b.creationDate
+		FROM smbms_bill b,smbms_provider p
+		WHERE b.providerId = p.id
+		<if test="pname!=null and pname!=''">
+			AND b.productName LIKE CONCAT('%',#{pname},'%')
+		</if>
+		<if test="pid!=null and pid!=''">
+			AND b.providerId = #{pid}
+		</if>
+		<if test="ispay!=null and ispay!=''">
+			AND b.isPayment = #{ispay}
+		</if>
+	</select>
+	<resultMap type="bill" id="getbill">
+		<result column="proName" property="providerName"/>
+	</resultMap>
+
+</mapper>
